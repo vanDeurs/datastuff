@@ -7,7 +7,7 @@ namespace ProjectSaveTheWorld
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            Console.WriteLine("This is project.. Save the world!");
+            Console.WriteLine("This is project Wilson van lil snopp");
         }
     }
 }
