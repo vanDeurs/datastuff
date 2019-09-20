@@ -8,6 +8,7 @@ namespace ProjectSaveTheWorld
         {
             Console.WriteLine("Hello World!");
             Console.WriteLine("This is project Wilson van megalill snopp");
+            Console.WriteLine("Suga min snåpp");
         }
     }
 }
