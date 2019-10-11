@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Collections.Generic;
 
 namespace ProjectSaveTheWorld
 {
@@ -6,9 +8,17 @@ namespace ProjectSaveTheWorld
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            Console.WriteLine("This is project Wilson van megalill snopp");
-            Console.WriteLine("Suga min snåpp");
+            using (var reader = new StreamReader(@"C:\users/alexw/documents/gymnasiearbete/projectsavetheworld/data/klimato-ingredients-15.csv"))
+            {
+                List<string> listA = new List<string>();
+                List<string> listB = new List<string>();
+                while (!reader.EndOfStream)
+                {
+                    var line = reader.ReadLine();
+                    var values = line.Split(',');
+                    Console.WriteLine("Line: " + line);
+                }
+            }
         }
     }
 }
