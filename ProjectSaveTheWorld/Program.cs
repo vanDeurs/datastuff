@@ -29,7 +29,7 @@ namespace ProjectSaveTheWorld
                         listC.Add(values[2]);
                         listD.Add(values[3]);
                         }
-                    Console.WriteLine("Values {0}: {1}", values[0], values[4]);
+                    Console.WriteLine("Values {0}: {1}", values[7], values[8]);
                     Thread.Sleep(500);
                     }
                 }
