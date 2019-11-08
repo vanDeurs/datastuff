@@ -53,10 +53,21 @@ namespace ProjectSaveTheWorld
         {
             get { return this.Variations; }
         }
+        public bool includesVariation (string regionName)
+        {
+            foreach (Variation var in this.Variations)
+            {
+                if (var.REGIONNAME == regionName) {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void writeInformation()
         {
             Console.WriteLine("Name: {0}\nSLVID: {1}\n_id: {2}\nAvgCO2: {3}\nFoodCat1ID: {4}\nFoodCat1Name: {5}\nFoodCat2ID: {6}\nFoodCat2Name: {7}\nFoodCat3ID: {8}\nFoodCat3Name: {9}", this.Name, this.SLVID, this._id, this.WeightedAvgCO2, this.FoodCat1ID, this.FoodCat1Name, this.FoodCat2ID, this.FoodCat2Name, this.FoodCat3ID, this.FoodCat3Name);
         }
+
 
     }
 }

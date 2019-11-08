@@ -11,29 +11,28 @@ namespace ProjectSaveTheWorld
     {
         static void Main(string[] args)
         {
-            void loadJsonWithClass()
+            void loadJson()
             {
                 using (StreamReader r = new StreamReader("../../../json1.json"))
                 {
                     string json = r.ReadToEnd();
                     List<Ingredient> ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(json);
                     Console.WriteLine("Length of ingredients: {0}", ingredients.Count);
+                    double swedishVariations = 0;
                     foreach (Ingredient ingredient in ingredients)
                     {
-                        ingredient.writeInformation();
-                        foreach (Variation variation in ingredient.VARIATIONS)
+                        if (ingredient.includesVariation("Svenska"))
                         {
-                            Console.WriteLine("--------------------");
-                            variation.writeInformation();
-                            Console.WriteLine("--------------------");
+                            swedishVariations++;
                         }
-                        Console.WriteLine("--------------------");
-                        Thread.Sleep(100000);
+                        //Console.WriteLine("Antal: {0}", swedishVariations); 
                     }
+                    Console.WriteLine("Antal svenska variationer: {0}", swedishVariations);
                 }
             }
+            loadJson();
 
-            void loadJsonWithoutClass ()
+            /*void loadJsonWithoutClass ()
             {
                 using(StreamReader r = new StreamReader("../../../json1.json"))
                 {
@@ -56,9 +55,8 @@ namespace ProjectSaveTheWorld
                     }
                     Console.WriteLine("Total CO2 per kilo in swedish ingredients: {0}", CO2SumPerKg);
                 }
-            }
+            }*/
             //loadJsonWithoutClass();
-            loadJsonWithClass();
         }
     }
 }

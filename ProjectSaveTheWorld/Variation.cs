@@ -6,7 +6,7 @@ namespace ProjectSaveTheWorld
 {
     class Variation
     {
-        double CO2;
+        double Co2;
         bool Organic;
         int ID;
         int RegionID;
@@ -14,13 +14,21 @@ namespace ProjectSaveTheWorld
 
         public Variation(double CO2, bool Organic, int ID, int RegionID, string RegionName)
         {
-            this.CO2 = CO2;
+            this.Co2 = CO2;
             this.Organic = Organic;
             this.ID = ID;
             this.RegionID = RegionID;
             this.RegionName = RegionName;
         }
 
+        public string REGIONNAME
+        {
+            get { return this.RegionName; }
+        }
+        public double CO2
+        {
+            get { return this.Co2; }
+        }
         public void writeInformation ()
         {
             Console.WriteLine("CO2: {0}", this.CO2);
