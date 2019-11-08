@@ -6,11 +6,28 @@ namespace ProjectSaveTheWorld
 {
     class Variation
     {
-        double co2;
-        bool organic;
-        int id;
-        int regionId;
-        string regionName;
-        string name;
+        double CO2;
+        bool Organic;
+        int ID;
+        int RegionID;
+        string RegionName;
+
+        public Variation(double CO2, bool Organic, int ID, int RegionID, string RegionName)
+        {
+            this.CO2 = CO2;
+            this.Organic = Organic;
+            this.ID = ID;
+            this.RegionID = RegionID;
+            this.RegionName = RegionName;
+        }
+
+        public void writeInformation ()
+        {
+            Console.WriteLine("CO2: {0}", this.CO2);
+            Console.WriteLine("Organic: {0}", this.Organic);
+            Console.WriteLine("ID: {0}", this.ID);
+            Console.WriteLine("RegionId: {0}", this.RegionID);
+            Console.WriteLine("RegionName: {0}", this.RegionName);
+        }
     }
 }

@@ -13,10 +13,23 @@ namespace ProjectSaveTheWorld
         {
             void loadJsonWithClass()
             {
-                using (StreamReader r = new StreamReader("E:\\Debug\\VipBat\\json1.json"))
+                using (StreamReader r = new StreamReader("../../../json1.json"))
                 {
                     string json = r.ReadToEnd();
-                    List<Ingredient> items = JsonConvert.DeserializeObject<List<Ingredient>>(json);
+                    List<Ingredient> ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(json);
+                    Console.WriteLine("Length of ingredients: {0}", ingredients.Count);
+                    foreach (Ingredient ingredient in ingredients)
+                    {
+                        ingredient.writeInformation();
+                        foreach (Variation variation in ingredient.VARIATIONS)
+                        {
+                            Console.WriteLine("--------------------");
+                            variation.writeInformation();
+                            Console.WriteLine("--------------------");
+                        }
+                        Console.WriteLine("--------------------");
+                        Thread.Sleep(100000);
+                    }
                 }
             }
 
@@ -30,6 +43,7 @@ namespace ProjectSaveTheWorld
                     double CO2SumPerKg = 0;
                     foreach (var ingredient in array)
                     {
+                        Console.WriteLine("Ingredient: {0}", ingredient.Name);
                         var variations = ingredient.Variations;
                         foreach(var variation in variations)
                         {
@@ -40,10 +54,11 @@ namespace ProjectSaveTheWorld
                             }
                         }
                     }
-                    Console.WriteLine("CO2 sum: {0}", CO2SumPerKg);
+                    Console.WriteLine("Total CO2 per kilo in swedish ingredients: {0}", CO2SumPerKg);
                 }
             }
-            loadJsonWithoutClass();
+            //loadJsonWithoutClass();
+            loadJsonWithClass();
         }
     }
 }
