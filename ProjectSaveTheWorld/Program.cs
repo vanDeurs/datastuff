@@ -18,16 +18,7 @@ namespace ProjectSaveTheWorld
                     string json = r.ReadToEnd();
                     List<Ingredient> ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(json);
                     Console.WriteLine("Length of ingredients: {0}", ingredients.Count);
-                    double swedishVariations = 0;
-                    foreach (Ingredient ingredient in ingredients)
-                    {
-                        if (ingredient.includesVariation("Svenska"))
-                        {
-                            swedishVariations++;
-                        }
-                        //Console.WriteLine("Antal: {0}", swedishVariations); 
-                    }
-                    Console.WriteLine("Antal svenska variationer: {0}", swedishVariations);
+                    Ingredient.CO2PerIngredientPerRegion(ingredients, "Sverige");
                 }
             }
             loadJson();
