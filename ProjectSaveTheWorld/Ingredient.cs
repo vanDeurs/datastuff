@@ -49,6 +49,7 @@ namespace ProjectSaveTheWorld
             this.FoodCat3Name = FoodCat3Name;
             this.Variations = Variations;
         }
+        //Properties
         public object NAME
         {
             get { return this.Name; }
@@ -86,6 +87,27 @@ namespace ProjectSaveTheWorld
             return distinctVariationRegions;
         }
 
+        public static IEnumerable<string> UniqueFoodCats(int catIndex, List<Ingredient> ingredients)
+        {
+            List<String> variations = new List<String>();
+            foreach (Ingredient ingredient in ingredients)
+            {
+                switch (catIndex)
+                {
+                    case 1: variations.Add(ingredient.FoodCat1Name);
+                        break;
+                    case 2: variations.Add(ingredient.FoodCat2Name);
+                        break;
+                    case 3: variations.Add(ingredient.FoodCat3Name);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            IEnumerable<string> distinctVariationRegions = variations.Distinct();
+            return distinctVariationRegions;
+        }
+
         public static void DownloadCSV (List<dynamic> list)
         {
             StringBuilder csv = new StringBuilder();
@@ -98,11 +120,19 @@ namespace ProjectSaveTheWorld
                                       );
             csv.AppendLine(header);
 
-            foreach (var item in list)
+            /*foreach (var item in list)
             {
-                Console.WriteLine("item: {0}", item);
                 dynamic listResults = string.Format("\"{0}\",\"{1}\",\"{2}\"",
                                                   item.region,
+                                                  item.averageCO2,
+                                                  item.totalCO2
+                                                 );
+                csv.AppendLine(listResults);
+            }*/
+            foreach (var item in list)
+            {
+                dynamic listResults = string.Format("\"{0}\",\"{1}\",\"{2}\"",
+                                                  item.category,
                                                   item.averageCO2,
                                                   item.totalCO2
                                                  );
@@ -115,7 +145,7 @@ namespace ProjectSaveTheWorld
 
         // Calculating methods
 
-        public static void CO2PerIngredientPerRegion (List<Ingredient> ingredients, string Sverige)
+        public static void CO2PerIngredientPerRegion (List<Ingredient> ingredients)
         {
             IEnumerable<string> regions = uniqueRegions(ingredients);
             List <dynamic> regionObjects = new List<dynamic>();
@@ -153,6 +183,65 @@ namespace ProjectSaveTheWorld
             if (downloadCSVFile)
             {
                 DownloadCSV(regionObjects);
+            }
+        }
+        // catIndex avgör om man ska jämföra FoodCat1,2 eller 3 
+        public static void CO2PerIngredientPerFoodCat(int catIndex, List<Ingredient> ingredients)
+        {
+            IEnumerable<string> foodCats = UniqueFoodCats(catIndex, ingredients);
+            List<dynamic> catObjects = new List<dynamic>();
+            foreach (string cat in foodCats)
+            {
+                dynamic catObject = new ExpandoObject();
+                catObject.category = cat;
+                catObject.index = catIndex;
+                catObject.averageCO2 = 0;
+                catObject.totalCO2 = 0;
+                catObject.ingredients = new List<Ingredient>();
+
+                foreach (Ingredient ingredient in ingredients)
+                {
+                    switch (catIndex)
+                    {
+                        case 1:
+                            if (ingredient.FoodCat1Name == cat)
+                            {
+                                catObject.totalCO2 += ingredient.WeightedAvgCO2;
+                                catObject.ingredients.Add(ingredient);
+                            }
+                            break;
+                        case 2:
+                            if (ingredient.FoodCat2Name == cat)
+                            {
+                                catObject.totalCO2 += ingredient.WeightedAvgCO2;
+                                catObject.ingredients.Add(ingredient);
+                            }
+                            break;
+                        case 3:
+                            if (ingredient.FoodCat3Name == cat)
+                            {
+                                catObject.totalCO2 += ingredient.WeightedAvgCO2;
+                                catObject.ingredients.Add(ingredient);
+                            }
+                            break;
+                    }
+                }
+                catObject.averageCO2 = catObject.totalCO2 / catObject.ingredients.Count;
+                catObjects.Add(catObject);
+            }
+            foreach (dynamic catObject in catObjects)
+            {
+                Console.WriteLine("Kategori: {0}", catObject.category);
+                Console.WriteLine("Index: {0}", catObject.index);
+                Console.WriteLine("Genomsnittligt {0} gram CO2e per gram av ingrediens", catObject.averageCO2);
+                Console.WriteLine("Antal ingredienser i beräkningarna: {0}", catObject.ingredients.Count);
+                Console.WriteLine("---------------------------");
+            }
+
+            bool downloadCSVFile = true;
+            if (downloadCSVFile)
+            {
+                DownloadCSV(catObjects);
             }
         }
 
