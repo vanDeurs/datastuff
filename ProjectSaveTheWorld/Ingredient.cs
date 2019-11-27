@@ -113,10 +113,9 @@ namespace ProjectSaveTheWorld
             StringBuilder csv = new StringBuilder();
 
             // If you want headers for your file
-            var header = string.Format("\"{0}\",\"{1}\",\"{2}\"",
-                                       "Name.sv",
-                                       "WeightedAvgCO2",
-                                       "TotalCO2"
+            var header = string.Format("\"{0}\",\"{1}\"",
+                                       "CO2",
+                                       "Region"
                                       );
             csv.AppendLine(header);
 
@@ -132,10 +131,9 @@ namespace ProjectSaveTheWorld
             }*/
             foreach (var item in list)
             {
-                dynamic listResults = string.Format("\"{0}\",\"{1}\",\"{2}\"",
-                                                  item.category,
-                                                  item.averageCO2,
-                                                  item.totalCO2
+                dynamic listResults = string.Format("\"{0}\",\"{1}\"",
+                                                  item.averageCO2PerMeatVariation,
+                                                  item.region
                                                  );
                 csv.AppendLine(listResults);
             }
@@ -239,7 +237,7 @@ namespace ProjectSaveTheWorld
                 Console.WriteLine("---------------------------");
             }
 
-            bool downloadCSVFile = true;
+            bool downloadCSVFile = false;
             if (downloadCSVFile)
             {
                 DownloadCSV(catObjects);
@@ -248,60 +246,126 @@ namespace ProjectSaveTheWorld
         public static void CO2InsideMeatCategory(List<Ingredient> ingredients)
         {
             // This method returns all ingredients which have "Kött" as their FoodCat1Name
-            List<dynamic> meats = new List<dynamic>();
+            List<dynamic> variations = new List<dynamic>();
+
             dynamic meatData = new ExpandoObject();
-            meatData.averageCO2OrganicIngredients = 0;
-            meatData.averageCO2ConventionalIngredients = 0;
-            meatData.organicIngredients = new List<Variation>();
-            meatData.conventionalIngredients = new List<Variation>();
-            meatData.totalIngredients = new List<Variation>();
+            meatData.averageCO2OrganicVariations = 0;
+            meatData.averageCO2ConventionalVariations = 0;
+            meatData.organicVariations = new List<Variation>();
+            meatData.conventionalVariations = new List<Variation>();
+            meatData.totalVariations = new List<Variation>();
             meatData.averageCO2Total = 0;
+            meatData.meatIngredients = 0;
+
+            meatData.meatIngredientsCO2 = 0;
+            meatData.totalIngredients = new List<Ingredient>();
 
             foreach (Ingredient ingredient in ingredients)
             {
+                // ID 6 is for meat
                 if (ingredient.FoodCat1ID == 6)
                 {
+                    meatData.meatIngredientsCO2 += ingredient.WeightedAvgCO2;
+                    meatData.totalIngredients.Add(ingredient);
                     foreach (Variation variation in ingredient.VARIATIONS)
                     {
-                        meatData.totalIngredients.Add(variation);
+                        dynamic variationObject = new ExpandoObject();
+                        variationObject.CO2 = variation.CO2;
+                        variationObject.Organic = variation.ORGANIC;
+                        variationObject.RegionName = variation.REGIONNAME;
+                        variations.Add(variationObject);
+
+                        meatData.totalVariations.Add(variation);
                         meatData.averageCO2Total += variation.CO2;
                         if (variation.ORGANIC)
                         {
-                            meatData.organicIngredients.Add(variation);
-                            meatData.averageCO2OrganicIngredients += variation.CO2;
+                            meatData.organicVariations.Add(variation);
+                            meatData.averageCO2OrganicVariations += variation.CO2;
                         } else
                         {
-                            meatData.conventionalIngredients.Add(variation);
-                            meatData.averageCO2ConventionalIngredients += variation.CO2;
+                            meatData.conventionalVariations.Add(variation);
+                            meatData.averageCO2ConventionalVariations += variation.CO2;
                         }
                     }
                 }
             }
-            if (meatData.organicIngredients.Count < 1 && meatData.conventionalIngredients.Count < 1)
+            if (meatData.organicVariations.Count < 1 && meatData.conventionalVariations.Count < 1)
             {
                 Console.WriteLine("meatData count is less than one. Stop here.");
                 return;
             }
 
-            meatData.averageCO2Total = meatData.averageCO2Total / meatData.totalIngredients.Count;
+            meatData.meatIngredientsCO2 = meatData.meatIngredientsCO2 / meatData.totalIngredients.Count;
+            Console.WriteLine("Genomsnitt kött baserat på avg CO2: {0}", meatData.meatIngredientsCO2);
 
-            Console.WriteLine("Amount of meat: {0}", meatData.totalIngredients.Count);
+            Console.WriteLine("Antal kött: {0}", meatData.meatIngredients);
+
+            meatData.averageCO2Total = meatData.averageCO2Total / meatData.totalVariations.Count;
+
+            Console.WriteLine("Amount of meat: {0}", meatData.totalVariations.Count);
             Console.WriteLine("Average CO2 for meat: {0}", meatData.averageCO2Total);
 
-            meatData.averageCO2OrganicIngredients = meatData.averageCO2OrganicIngredients / meatData.organicIngredients.Count;
-            meatData.averageCO2ConventionalIngredients = meatData.averageCO2ConventionalIngredients / meatData.conventionalIngredients.Count;
+            meatData.averageCO2OrganicVariations = meatData.averageCO2OrganicVariations / meatData.organicVariations.Count;
+            meatData.averageCO2ConventionalVariations = meatData.averageCO2ConventionalVariations / meatData.conventionalVariations.Count;
 
-            Console.WriteLine("Amount of organic meats: {0}", meatData.organicIngredients.Count);
-            Console.WriteLine("Average CO2 for organic meats: {0}", meatData.averageCO2OrganicIngredients);
-            Console.WriteLine("Amount of organic meats: {0}", meatData.conventionalIngredients.Count);
-            Console.WriteLine("Average CO2 for conventional meats: {0}", meatData.averageCO2ConventionalIngredients);
+            Console.WriteLine("Amount of organic meats: {0}", meatData.organicVariations.Count);
+            Console.WriteLine("Average CO2 for organic meats: {0}", meatData.averageCO2OrganicVariations);
+            Console.WriteLine("Amount of organic meats: {0}", meatData.conventionalVariations.Count);
+            Console.WriteLine("Average CO2 for conventional meats: {0}", meatData.averageCO2ConventionalVariations);
+
+            bool downloadCSVFile = true;
+            if (downloadCSVFile)
+            {
+                DownloadCSV(variations);
+            }
+        }
+
+        public static void CO2ForMeatPerRegion(List<Ingredient> ingredients)
+        {
+            // This method compares the CO2e for meat per regions
+            IEnumerable<string> regions = uniqueRegions(ingredients);
+            List<dynamic> regionObjects = new List<dynamic>();
+
+            foreach (string region in regions)
+            {
+                dynamic regionObject = new ExpandoObject();
+                regionObject.region = region;
+                regionObject.meatVariations = new List<Variation>();
+                regionObject.averageCO2PerMeatVariation = 0;
+
+                foreach (Ingredient ingredient in ingredients)
+                {
+                    if (ingredient.FoodCat1ID == 6)
+                    {
+                        foreach (Variation variation in ingredient.VARIATIONS)
+                        {
+                            if (variation.REGIONNAME == region)
+                            {
+                                regionObject.meatVariations.Add(variation);
+                                regionObject.averageCO2PerMeatVariation += variation.CO2;
+                            }
+                        }
+                    }
+                }
+                if (regionObject.meatVariations.Count < 1) { continue; }
+
+                regionObject.averageCO2PerMeatVariation = regionObject.averageCO2PerMeatVariation / regionObject.meatVariations.Count;
+                regionObjects.Add(regionObject);
+            }
+
+            foreach (dynamic regionObject in regionObjects)
+            {
+                Console.WriteLine("Region: {0}", regionObject.region);
+                Console.WriteLine("Avg CO2: {0}", regionObject.averageCO2PerMeatVariation);
+                Console.WriteLine("Antal variationer: {0}", regionObject.meatVariations.Count);
+                Console.WriteLine("---------------------------");
+            }
 
             bool downloadCSVFile = false;
             if (downloadCSVFile)
             {
-                DownloadCSV(meatData.totalIngredients);
+                DownloadCSV(regionObjects);
             }
         }
-
     }
 }
