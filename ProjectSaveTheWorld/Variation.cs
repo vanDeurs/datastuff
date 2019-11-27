@@ -29,6 +29,10 @@ namespace ProjectSaveTheWorld
         {
             get { return this.Co2; }
         }
+        public bool ORGANIC
+        {
+            get { return this.Organic; }
+        }
         public void writeInformation ()
         {
             Console.WriteLine("CO2: {0}", this.CO2);

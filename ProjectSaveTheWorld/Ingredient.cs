@@ -89,23 +89,23 @@ namespace ProjectSaveTheWorld
 
         public static IEnumerable<string> UniqueFoodCats(int catIndex, List<Ingredient> ingredients)
         {
-            List<String> variations = new List<String>();
+            List<String> categories = new List<String>();
             foreach (Ingredient ingredient in ingredients)
             {
                 switch (catIndex)
                 {
-                    case 1: variations.Add(ingredient.FoodCat1Name);
+                    case 1: categories.Add(ingredient.FoodCat1Name);
                         break;
-                    case 2: variations.Add(ingredient.FoodCat2Name);
+                    case 2: categories.Add(ingredient.FoodCat2Name);
                         break;
-                    case 3: variations.Add(ingredient.FoodCat3Name);
+                    case 3: categories.Add(ingredient.FoodCat3Name);
                         break;
                     default:
                         break;
                 }
             }
-            IEnumerable<string> distinctVariationRegions = variations.Distinct();
-            return distinctVariationRegions;
+            IEnumerable<string> distinctCategories = categories.Distinct();
+            return distinctCategories;
         }
 
         public static void DownloadCSV (List<dynamic> list)
@@ -114,12 +114,13 @@ namespace ProjectSaveTheWorld
 
             // If you want headers for your file
             var header = string.Format("\"{0}\",\"{1}\",\"{2}\"",
-                                       "RegionName",
-                                       "AverageCO2",
+                                       "Name.sv",
+                                       "WeightedAvgCO2",
                                        "TotalCO2"
                                       );
             csv.AppendLine(header);
 
+            // For downloading CO2PerIngredientPerRegion
             /*foreach (var item in list)
             {
                 dynamic listResults = string.Format("\"{0}\",\"{1}\",\"{2}\"",
@@ -185,7 +186,7 @@ namespace ProjectSaveTheWorld
                 DownloadCSV(regionObjects);
             }
         }
-        // catIndex avgör om man ska jämföra FoodCat1,2 eller 3 
+        // catIndex avgör om man ska jämföra FoodCat 1, 2 eller 3 
         public static void CO2PerIngredientPerFoodCat(int catIndex, List<Ingredient> ingredients)
         {
             IEnumerable<string> foodCats = UniqueFoodCats(catIndex, ingredients);
@@ -244,7 +245,63 @@ namespace ProjectSaveTheWorld
                 DownloadCSV(catObjects);
             }
         }
+        public static void CO2InsideMeatCategory(List<Ingredient> ingredients)
+        {
+            // This method returns all ingredients which have "Kött" as their FoodCat1Name
+            List<dynamic> meats = new List<dynamic>();
+            dynamic meatData = new ExpandoObject();
+            meatData.averageCO2OrganicIngredients = 0;
+            meatData.averageCO2ConventionalIngredients = 0;
+            meatData.organicIngredients = new List<Variation>();
+            meatData.conventionalIngredients = new List<Variation>();
+            meatData.totalIngredients = new List<Variation>();
+            meatData.averageCO2Total = 0;
 
+            foreach (Ingredient ingredient in ingredients)
+            {
+                if (ingredient.FoodCat1ID == 6)
+                {
+                    foreach (Variation variation in ingredient.VARIATIONS)
+                    {
+                        meatData.totalIngredients.Add(variation);
+                        meatData.averageCO2Total += variation.CO2;
+                        if (variation.ORGANIC)
+                        {
+                            meatData.organicIngredients.Add(variation);
+                            meatData.averageCO2OrganicIngredients += variation.CO2;
+                        } else
+                        {
+                            meatData.conventionalIngredients.Add(variation);
+                            meatData.averageCO2ConventionalIngredients += variation.CO2;
+                        }
+                    }
+                }
+            }
+            if (meatData.organicIngredients.Count < 1 && meatData.conventionalIngredients.Count < 1)
+            {
+                Console.WriteLine("meatData count is less than one. Stop here.");
+                return;
+            }
+
+            meatData.averageCO2Total = meatData.averageCO2Total / meatData.totalIngredients.Count;
+
+            Console.WriteLine("Amount of meat: {0}", meatData.totalIngredients.Count);
+            Console.WriteLine("Average CO2 for meat: {0}", meatData.averageCO2Total);
+
+            meatData.averageCO2OrganicIngredients = meatData.averageCO2OrganicIngredients / meatData.organicIngredients.Count;
+            meatData.averageCO2ConventionalIngredients = meatData.averageCO2ConventionalIngredients / meatData.conventionalIngredients.Count;
+
+            Console.WriteLine("Amount of organic meats: {0}", meatData.organicIngredients.Count);
+            Console.WriteLine("Average CO2 for organic meats: {0}", meatData.averageCO2OrganicIngredients);
+            Console.WriteLine("Amount of organic meats: {0}", meatData.conventionalIngredients.Count);
+            Console.WriteLine("Average CO2 for conventional meats: {0}", meatData.averageCO2ConventionalIngredients);
+
+            bool downloadCSVFile = false;
+            if (downloadCSVFile)
+            {
+                DownloadCSV(meatData.totalIngredients);
+            }
+        }
 
     }
 }

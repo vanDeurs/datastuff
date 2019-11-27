@@ -17,11 +17,8 @@ namespace ProjectSaveTheWorld
                 {
                     string json = r.ReadToEnd();
                     List<Ingredient> ingredients = JsonConvert.DeserializeObject<List<Ingredient>>(json);
-                    Console.WriteLine("Length of ingredients: {0}", ingredients.Count);
-                    //Ingredient.CO2PerIngredientPerRegion(ingredients);
-                   // Ingredient.CO2PerIngredientPerFoodCat(3, ingredients);
-                   // Ingredient.CO2PerIngredientPerFoodCat(2, ingredients);
-                   Ingredient.CO2PerIngredientPerFoodCat(1, ingredients);
+                    Ingredient.CO2InsideMeatCategory(ingredients);
+                    Ingredient.CO2PerIngredientPerFoodCat(1, ingredients);
                 }
             }
             loadJson();

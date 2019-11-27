@@ -353,3 +353,6 @@ MigrationBackup/
 
 ../../../json1.json
 json1.json
+
+data.csv
+../../../data.csv
