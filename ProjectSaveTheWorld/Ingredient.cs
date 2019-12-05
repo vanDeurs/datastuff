@@ -382,7 +382,8 @@ namespace ProjectSaveTheWorld
                     {
                         organics.Add(variation);
                         CO2OrganicAvg += variation.CO2;
-                    } else
+                    } 
+                    else
                     {
                         conventionals.Add(variation);
                         CO2ConventionalAvg += variation.CO2;
@@ -396,6 +397,49 @@ namespace ProjectSaveTheWorld
             Console.WriteLine("Organic CO2 AVG: {0}", CO2OrganicAvg);
             Console.WriteLine("Conventional CO2 AVG: {0}", CO2ConventionalAvg);
         }
+        public static void ProductionMethodsPerCountry(List<Ingredient> ingredients)
+        {
+            IEnumerable<string> regions = uniqueRegions(ingredients);
+            List <dynamic> regionObjects = new List<dynamic>();
 
+            foreach ( string region in regions)
+	        {
+                dynamic regionObject = new ExpandoObject();
+                regionObject.region = region;
+                regionObject.CO2ConventionalAvg = 0;
+                regionObject.CO2OrganicAvg = 0;
+                regionObject.organics = new List<Variation>();
+                regionObject.conventionals = new List<Variation>();
+                foreach (Ingredient ingredient in ingredients)
+                {
+                    foreach (Variation variation in ingredient.VARIATIONS)
+                    {
+                        if (regionObject.region == region)
+	                    {
+                            if (variation.ORGANIC)
+                            {
+                                regionObject.CO2OrganicAvg += variation.CO2;
+                                regionObject.organics.Add(variation);
+                            } 
+                            else
+                            {
+                                regionObject.CO2ConventionalAvg += variation.CO2;
+                                regionObject.conventionals.Add(variation);
+                            }
+	                    }
+
+                    }
+                }
+                regionObject.CO2OrganicAvg = regionObject.CO2OrganicAvg / regionObject.organics.Count;
+                regionObject.CO2ConventionalAvg = regionObject.CO2ConventionalAvg / regionObject.conventionals.Count;
+
+                regionObjects.Add(regionObject);
+	        }
+            foreach (dynamic regionobj in regionObjects)
+			{
+                Console.WriteLine("{0}, Konventionell:{1} Ekologisk:{2}" , regionobj.region, regionobj.CO2ConventionalAvg, regionobj.CO2OrganicAvg);
+			}
         }
+
+    }
 }
