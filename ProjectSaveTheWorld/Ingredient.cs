@@ -320,7 +320,7 @@ namespace ProjectSaveTheWorld
             }
         }
 
-        public static void CO2ForMeatPerRegion(List<Ingredient> ingredients)
+        public static void CO2ForIngredientPerRegion(List<Ingredient> ingredients, int FoodCat1ID)
         {
             // This method compares the CO2e for meat per regions
             IEnumerable<string> regions = uniqueRegions(ingredients);
@@ -335,7 +335,7 @@ namespace ProjectSaveTheWorld
 
                 foreach (Ingredient ingredient in ingredients)
                 {
-                    if (ingredient.FoodCat1ID == 6)
+                    if (ingredient.FoodCat1ID == FoodCat1ID)
                     {
                         foreach (Variation variation in ingredient.VARIATIONS)
                         {
@@ -361,11 +361,41 @@ namespace ProjectSaveTheWorld
                 Console.WriteLine("---------------------------");
             }
 
-            bool downloadCSVFile = false;
+            bool downloadCSVFile = true;
             if (downloadCSVFile)
             {
                 DownloadCSV(regionObjects);
             }
         }
-    }
+        public static void ProductionMethods(List<Ingredient> ingredients)
+        {
+            double CO2ConventionalAvg = 0;
+            double CO2OrganicAvg = 0;
+            List<Variation> organics = new List<Variation>();
+            List<Variation> conventionals = new List<Variation>();
+
+            foreach (Ingredient ingredient in ingredients)
+            {
+                foreach (Variation variation in ingredient.VARIATIONS)
+                {
+                    if (variation.ORGANIC == true)
+                    {
+                        organics.Add(variation);
+                        CO2OrganicAvg += variation.CO2;
+                    } else
+                    {
+                        conventionals.Add(variation);
+                        CO2ConventionalAvg += variation.CO2;
+                    }
+                }
+            }
+            CO2ConventionalAvg = CO2ConventionalAvg / conventionals.Count;
+            CO2OrganicAvg = CO2OrganicAvg / organics.Count;
+            Console.WriteLine("Amount of organics: {0}", organics.Count);
+            Console.WriteLine("Amount of conventionals: {0}", conventionals.Count);
+            Console.WriteLine("Organic CO2 AVG: {0}", CO2OrganicAvg);
+            Console.WriteLine("Conventional CO2 AVG: {0}", CO2ConventionalAvg);
+        }
+
+        }
 }
