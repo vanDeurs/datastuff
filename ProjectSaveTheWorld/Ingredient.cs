@@ -408,31 +408,48 @@ namespace ProjectSaveTheWorld
                 regionObject.region = region;
                 regionObject.CO2ConventionalAvg = 0;
                 regionObject.CO2OrganicAvg = 0;
+                regionObject.C02Difference = 0;
                 regionObject.organics = new List<Variation>();
                 regionObject.conventionals = new List<Variation>();
                 foreach (Ingredient ingredient in ingredients)
                 {
                     foreach (Variation variation in ingredient.VARIATIONS)
                     {
-                        if (regionObject.region == region)
-	                    {
+                        if (variation.REGIONNAME == regionObject.region)
+                        {
                             if (variation.ORGANIC)
                             {
                                 regionObject.CO2OrganicAvg += variation.CO2;
                                 regionObject.organics.Add(variation);
-                            } 
+                            }
                             else
                             {
                                 regionObject.CO2ConventionalAvg += variation.CO2;
                                 regionObject.conventionals.Add(variation);
                             }
-	                    }
+                        }
+                            
 
                     }
                 }
-                regionObject.CO2OrganicAvg = regionObject.CO2OrganicAvg / regionObject.organics.Count;
-                regionObject.CO2ConventionalAvg = regionObject.CO2ConventionalAvg / regionObject.conventionals.Count;
 
+                if (regionObject.organics.Count != 0)
+                {
+                    regionObject.CO2OrganicAvg = regionObject.CO2OrganicAvg / regionObject.organics.Count;
+                }
+                if (regionObject.conventionals.Count != 0)
+                {
+                    regionObject.CO2ConventionalAvg = regionObject.CO2ConventionalAvg / regionObject.conventionals.Count;
+                }
+
+                if (regionObject.CO2ConventionalAvg> regionObject.CO2OrganicAvg)
+                {
+                   regionObject.CO2Difference= regionObject.CO2ConventionalAvg - regionObject.CO2OrganicAvg;
+                }
+                if(regionObject.CO2ConventionalAvg < regionObject.CO2OrganicAvg)
+                {
+                    regionObject.CO2Difference = regionObject.CO2OrganicAvg - regionObject.CO2ConventionalAvg;
+                }
                 regionObjects.Add(regionObject);
 	        }
             foreach (dynamic regionobj in regionObjects)
