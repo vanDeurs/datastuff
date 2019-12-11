@@ -113,7 +113,7 @@ namespace ProjectSaveTheWorld
             StringBuilder csv = new StringBuilder();
 
             // If you want headers for your file
-            var header = string.Format("\"{0}\",\"{1}\"{2}\"{3}\"{4}\"",
+            var header = string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\"",
                                        "Region",
                                        "ConventionalAvg",
                                        "OrganicAvg",
@@ -134,7 +134,7 @@ namespace ProjectSaveTheWorld
             }*/
             foreach (var item in list)
             {
-                dynamic listResults = string.Format("\"{0}\"\"{1}\"{2}\"{3}\"{4}\"",
+                dynamic listResults = string.Format("\"{0}\",\"{1}\",\"{2}\",\"{3}\",\"{4}\"",
                                                     item.region,
                                                     item.CO2ConventionalAvg,
                                                     item.CO2OrganicAvg,
@@ -451,15 +451,19 @@ namespace ProjectSaveTheWorld
 
                 if (regionObject.CO2ConventionalAvg >= regionObject.CO2OrganicAvg)
                 {
-                   regionObject.CO2Difference = (regionObject.CO2ConventionalAvg - regionObject.CO2OrganicAvg);
+                   regionObject.CO2Difference = regionObject.CO2ConventionalAvg - regionObject.CO2OrganicAvg;
                     regionObject.OrganicHighest = false;
                 }
-                else
+                if(regionObject.CO2ConventionalAvg < regionObject.CO2OrganicAvg)
                 {
                     regionObject.CO2Difference = regionObject.CO2OrganicAvg - regionObject.CO2ConventionalAvg;
                 }
                 regionObjects.Add(regionObject);
 	        }
+            foreach (dynamic regiono in regionObjects)
+            {
+                Console.WriteLine(regiono.CO2Difference);
+            }
             DownloadCSV(regionObjects);
         }
 
