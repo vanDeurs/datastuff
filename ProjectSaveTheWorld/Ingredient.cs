@@ -113,9 +113,12 @@ namespace ProjectSaveTheWorld
             StringBuilder csv = new StringBuilder();
 
             // If you want headers for your file
-            var header = string.Format("\"{0}\",\"{1}\"",
-                                       "CO2",
-                                       "Region"
+            var header = string.Format("\"{0}\",\"{1}\"{2}\"{3}\"{4}\"",
+                                       "Region",
+                                       "ConventionalAvg",
+                                       "OrganicAvg",
+                                       "CO2Difference",
+                                       "OrganicHighest"
                                       );
             csv.AppendLine(header);
 
@@ -131,9 +134,12 @@ namespace ProjectSaveTheWorld
             }*/
             foreach (var item in list)
             {
-                dynamic listResults = string.Format("\"{0}\",\"{1}\"",
-                                                  item.averageCO2PerMeatVariation,
-                                                  item.region
+                dynamic listResults = string.Format("\"{0}\"\"{1}\"{2}\"{3}\"{4}\"",
+                                                    item.region,
+                                                    item.CO2ConventionalAvg,
+                                                    item.CO2OrganicAvg,
+                                                    item.C02Difference,
+                                                    item.OrganicHighest
                                                  );
                 csv.AppendLine(listResults);
             }
@@ -409,6 +415,7 @@ namespace ProjectSaveTheWorld
                 regionObject.CO2ConventionalAvg = 0;
                 regionObject.CO2OrganicAvg = 0;
                 regionObject.C02Difference = 0;
+                regionObject.OrganicHighest = true;
                 regionObject.organics = new List<Variation>();
                 regionObject.conventionals = new List<Variation>();
                 foreach (Ingredient ingredient in ingredients)
@@ -442,20 +449,18 @@ namespace ProjectSaveTheWorld
                     regionObject.CO2ConventionalAvg = regionObject.CO2ConventionalAvg / regionObject.conventionals.Count;
                 }
 
-                if (regionObject.CO2ConventionalAvg> regionObject.CO2OrganicAvg)
+                if (regionObject.CO2ConventionalAvg >= regionObject.CO2OrganicAvg)
                 {
-                   regionObject.CO2Difference= regionObject.CO2ConventionalAvg - regionObject.CO2OrganicAvg;
+                   regionObject.CO2Difference = (regionObject.CO2ConventionalAvg - regionObject.CO2OrganicAvg);
+                    regionObject.OrganicHighest = false;
                 }
-                if(regionObject.CO2ConventionalAvg < regionObject.CO2OrganicAvg)
+                else
                 {
                     regionObject.CO2Difference = regionObject.CO2OrganicAvg - regionObject.CO2ConventionalAvg;
                 }
                 regionObjects.Add(regionObject);
 	        }
-            foreach (dynamic regionobj in regionObjects)
-			{
-                Console.WriteLine("{0}, Konventionell:{1} Ekologisk:{2}" , regionobj.region, regionobj.CO2ConventionalAvg, regionobj.CO2OrganicAvg);
-			}
+            DownloadCSV(regionObjects);
         }
 
     }
